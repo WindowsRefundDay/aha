@@ -1,50 +1,52 @@
-# Aha
+# aha
 
-A simple, beautiful, and privacy-focused note-taking app. Capture your thoughts, ideas, and moments of inspiration with ease.
+a simple, beautiful, and privacy-focused note-taking app. capture your thoughts, ideas, and moments of inspiration with ease.
 
-## Getting Started
+## get started
 
-Follow these instructions to get a local copy up and running.
+a few steps to get a local copy up and running.
 
-### Prerequisites
+### prerequisites
 
-- Node.js (v18 or later)
+- node.js (v18 or later)
 - npm or yarn
 
-### Installation
+### installation
 
-1. Clone the repo
-   ```sh
-   git clone https://github.com/joel-manuel/aha.git
-   ```
-2. Install NPM packages
-   ```sh
-   npm install
-   ```
-   or
+1.  clone the repo
+    ```sh
+    git clone https://github.com/WindowsRefundDay/aha.git
+    ```
+2.  install packages
+    ```sh
+    npm install
+    ```
+    or
     ```sh
     yarn install
     ```
 
-### Running the Application
+### run it
 
-To run the app in development mode, use:
+to run the app in development mode:
 
 ```sh
 npm run dev
 ```
+
 or
+
 ```sh
 yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+open [http://localhost:3000](http://localhost:3000) to see it in your browser.
 
-## Features
+## features
 
-- **Markdown Support**: Write notes in Markdown for rich text formatting.
-- **Dark Mode**: Easy on the eyes for late-night note-taking sessions.
-- **Customizable Accent Colors**: Personalize the look and feel of the app.
-- **Local Storage**: All your notes are saved directly in your browser. No cloud, no tracking.
-- **Search**: Quickly find the note you're looking for.
-- **Responsive Design**: Works beautifully on desktop and mobile browsers. 
+-   **markdown support** — write notes with rich text formatting.
+-   **dark mode** — for late-night sessions.
+-   **custom accents** — personalize the look and feel.
+-   **local storage** — your notes are saved in your browser. no cloud, no tracking.
+-   **search** — find what you're looking for, fast.
+-   **responsive** — works beautifully on desktop and mobile. 
