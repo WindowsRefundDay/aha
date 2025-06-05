@@ -15,6 +15,7 @@ import HistoryView from "@/components/views/HistoryView" // Added import
 import DetailView from "@/components/views/DetailView" // Added import
 import FocusNoteView from "@/components/views/FocusNoteView" // Added import
 import SettingsView from "@/components/views/SettingsView" // Added import
+import WelcomeView from "@/components/views/WelcomeView"
 
 // Constants from settings/page.tsx
 const ACCENT_COLORS = [
@@ -76,6 +77,7 @@ export default function Home() {
   const [selectedAccentKey, setSelectedAccentKey] = useState(DEFAULT_ACCENT_KEY);
   const [showClearNotesDialog, setShowClearNotesDialog] = useState(false);
   const [notesClearedMessageVisible, setNotesClearedMessageVisible] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null)
   const detailRef = useRef<HTMLTextAreaElement>(null)
@@ -92,6 +94,11 @@ export default function Home() {
     // This effect now runs for all views, but its logic is mostly for initializing settings.
     // Consider if this needs to be conditional or scoped if it causes issues.
     setIsMounted(true); // Indicates client-side has mounted
+
+    const hasVisited = localStorage.getItem("aha_has_visited") === 'true';
+    if (!hasVisited) {
+      setShowWelcome(true);
+    }
 
     const savedDarkMode = localStorage.getItem("aha_darkMode") === 'true';
     setIsDarkMode(savedDarkMode);
@@ -178,6 +185,11 @@ export default function Home() {
     }
   }, []);
 
+  const handleWelcomeDismiss = () => {
+    localStorage.setItem("aha_has_visited", "true");
+    setShowWelcome(false);
+  };
+
   const handleClearAllNotesFromSettings = useCallback(() => { // Renamed to avoid conflict if a general one exists
     localStorage.removeItem("aha_notes");
     setNotes([]); // Also clear notes from app state
@@ -246,6 +258,8 @@ export default function Home() {
   return (
     <main className="min-h-screen flex flex-col overflow-hidden">
       <AnimatePresence mode="wait">
+        {showWelcome && <WelcomeView onDismiss={handleWelcomeDismiss} />}
+
         {view === "capture" && (
           <CaptureView 
             gistInput={gistInput}
