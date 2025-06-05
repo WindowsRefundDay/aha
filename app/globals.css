@@ -1,0 +1,117 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background-rgb: 248 250 252; /* Corresponds to gray-50 */
+    --foreground-rgb: 15 23 42;    /* Corresponds to gray-900 (text) */
+    
+    /* Default Accent (Blue) - H S L values */
+    --accent-hsl: 217 91% 60%; 
+    --accent-foreground-hsl: 0 0% 100%; /* White text on accent */
+
+    /* Shadcn/ui variables (defaults, can be overridden by accent) */
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 214.3 31.8% 91.4%; /* Default focus ring, to be themed by accent */
+
+    --radius: 0.5rem;
+
+    /* Other shadcn/ui color variables - Light Theme Defaults */
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    /* --accent defined above */
+    /* --accent-foreground defined above */
+    --popover: 210 40% 98%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+    --card: 210 40% 98%;
+    --card-foreground: 222.2 47.4% 11.2%;
+  }
+
+  .dark {
+    --background-rgb: 0 0 0;         /* Pure Black for OLED */
+    --foreground-rgb: 226 232 240;  /* Corresponds to gray-200 (light text) */
+
+    /* Dark Theme Accent (can be same as light, or different if needed) */
+    /* --accent-hsl: 217 91% 60%; */ /* Example: Keep blue for dark too */
+    /* --accent-foreground-hsl: 0 0% 100%; */
+
+    /* Shadcn/ui variables - Dark Theme Defaults */
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 217.2 32.6% 17.5%; /* Default focus ring, to be themed by accent */
+    
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    /* --accent defined above (or overridden here if needed) */
+    /* --accent-foreground defined above */
+    --popover: 222.2 47.4% 11.2%;
+    --popover-foreground: 210 40% 98%;
+    --card: 222.2 47.4% 11.2%;
+    --card-foreground: 210 40% 98%;
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground;
+  }
+  /* Ensure Radix UI components pick up dark mode variables if they use them internally */
+  .radix-themes {
+    --default-bg: hsl(var(--background-rgb));
+  }
+}
+
+/* Additional utility for components that might need direct oled-black */
+.bg-oled-black {
+  background-color: #000000;
+}
+.dark .dark\:bg-oled-black {
+  background-color: #000000;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d1d1d1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #b3b3b3;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
