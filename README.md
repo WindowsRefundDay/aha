@@ -1,4 +1,4 @@
-![aha! app screenshot](/screenshot.png)
+![aha! app screenshot](public/screenshot.png)
 
 # aha
 
