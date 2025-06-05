@@ -173,6 +173,16 @@ export default function SettingsView({
           </motion.div>
         )}
       </AnimatePresence>
+
+      <p className="text-xs text-muted-foreground mt-4">
+        clearing notes is permanent and cannot be undone.
+      </p>
+
+      <div className="text-center mt-auto pb-4">
+        <p className="text-xs text-muted-foreground">
+          version {process.env.NEXT_PUBLIC_APP_VERSION}
+        </p>
+      </div>
     </motion.div>
   );
 } 
