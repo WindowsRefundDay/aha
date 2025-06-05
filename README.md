@@ -1,3 +1,5 @@
+![aha! app screenshot](/screenshot.png)
+
 # aha
 
 a simple, beautiful, and privacy-focused note-taking app. capture your thoughts, ideas, and moments of inspiration with ease.
