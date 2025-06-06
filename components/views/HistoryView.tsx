@@ -72,15 +72,13 @@ export default function HistoryView({
               key={note.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="relative"
+              className="relative bg-card rounded-xl"
             >
               <div
                 onClick={() => handleNoteClick(note)}
-                className={cn(
-                  "bg-card text-card-foreground p-4 rounded-xl cursor-pointer hover:bg-muted transition-colors",
-                )}
+                className="p-4 cursor-pointer hover:bg-muted/50 rounded-xl"
               >
-                <div>
+                <div className="pr-8">
                   <div className="break-words font-semibold line-clamp-2">{note.gist}</div>
                   {note.details && (
                     <p className="mt-2 text-sm text-muted-foreground line-clamp-3">
@@ -94,7 +92,7 @@ export default function HistoryView({
               </div>
               <button
                 onClick={() => handleDeleteNote(note.id)}
-                className="absolute right-0 top-0 w-12 h-12 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+                className="absolute right-0 top-0 w-12 h-12 flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors"
               >
                 <X size={16} />
               </button>
