@@ -160,7 +160,7 @@ export default function SettingsView({
                 <h2 className="text-lg font-semibold">are you sure?</h2>
               </div>
               <p className="text-sm text-muted-foreground">
-                This will permanently delete all your data. This action cannot be undone.
+                this will permanently delete all your data. this action cannot be undone.
               </p>
               <div className="flex justify-end space-x-3">
                 <button
