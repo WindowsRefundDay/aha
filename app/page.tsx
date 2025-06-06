@@ -100,12 +100,21 @@ export default function Home() {
       setShowWelcome(true);
     }
 
-    const savedDarkMode = localStorage.getItem("aha_darkMode") === 'true';
-    setIsDarkMode(savedDarkMode);
-    if (savedDarkMode) {
+    const savedDarkMode = localStorage.getItem("aha_darkMode");
+    if (savedDarkMode === null) {
+      // First visit, default to dark mode
+      setIsDarkMode(true);
       document.documentElement.classList.add('dark');
+      localStorage.setItem("aha_darkMode", 'true');
     } else {
-      document.documentElement.classList.remove('dark');
+      // Returning user, respect their choice
+      const isDark = savedDarkMode === 'true';
+      setIsDarkMode(isDark);
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
     }
 
     const savedAccentKey = localStorage.getItem("aha_accentColor_key") || DEFAULT_ACCENT_KEY;
@@ -183,6 +192,19 @@ export default function Home() {
       localStorage.setItem("aha_accentColor_hsl", selectedColor.hsl);
       localStorage.setItem("aha_accentColor_fg_hsl", selectedColor.fgHsl);
     }
+  }, []);
+
+  const handleFactoryReset = useCallback(() => {
+    // Clear all app-related localStorage items
+    localStorage.removeItem("aha_notes");
+    localStorage.removeItem("aha_darkMode");
+    localStorage.removeItem("aha_accentColor_key");
+    localStorage.removeItem("aha_accentColor_hsl");
+    localStorage.removeItem("aha_accentColor_fg_hsl");
+    localStorage.removeItem("aha_has_visited");
+    
+    // Reload the page to apply the factory reset state
+    window.location.reload();
   }, []);
 
   const handleWelcomeDismiss = () => {
@@ -319,7 +341,7 @@ export default function Home() {
             showClearNotesDialog={showClearNotesDialog}
             setShowClearNotesDialog={setShowClearNotesDialog}
             notesClearedMessageVisible={notesClearedMessageVisible}
-            handleClearAllNotesFromSettings={handleClearAllNotesFromSettings}
+            handleClearAllNotesFromSettings={handleFactoryReset}
           />
         )}
       </AnimatePresence>
