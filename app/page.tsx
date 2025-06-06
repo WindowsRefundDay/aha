@@ -128,8 +128,12 @@ export default function Home() {
   // Handle 'Esc' key to go back from history
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && view === 'history') {
-        setView('capture');
+      if (e.key === 'Escape') {
+        if (view === 'history') {
+          setView('capture');
+        } else if (view === 'detail' || view === 'focusNote') {
+          setView('history');
+        }
       }
     };
 
