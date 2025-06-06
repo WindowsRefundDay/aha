@@ -10,20 +10,18 @@ interface CaptureViewProps {
   gistInput: string;
   setGistInput: (value: string) => void;
   handleGistSubmit: (e?: React.FormEvent) => void;
-  notes: Note[];
-  handleNoteClick: (note: Note) => void;
   setView: (view: "capture" | "history" | "detail" | "focusNote" | "settings") => void;
   inputRef: React.RefObject<HTMLInputElement | null>;
+  notesExist: boolean;
 }
 
 export default function CaptureView({
   gistInput,
   setGistInput,
   handleGistSubmit,
-  notes,
-  handleNoteClick,
   setView,
-  inputRef
+  inputRef,
+  notesExist
 }: CaptureViewProps) {
   return (
     <motion.div
@@ -50,21 +48,18 @@ export default function CaptureView({
       </div>
 
       {/* Recent notes chips */}
-      {notes.length > 0 && (
-        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-          {notes.slice(0, 2).map((note) => (
-            <button
-              key={note.id}
-              onClick={() => handleNoteClick(note)}
-              className="px-3 py-1.5 bg-secondary text-secondary-foreground rounded-full text-sm whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px] hover:opacity-80"
-            >
-              {note.gist}
-            </button>
-          ))}
+      {notesExist && (
+        <div className="flex justify-end items-center mb-6">
+           <button onClick={() => setView("history")} className="text-sm font-medium text-accent hover:underline">
+            view all notes
+          </button>
         </div>
       )}
 
-      <form onSubmit={handleGistSubmit} className="mt-4">
+      <form onSubmit={handleGistSubmit} className="mt-auto space-y-4">
+        <p className="text-center text-sm text-muted-foreground">
+          capture what you're learning, right as you learn it.
+        </p>
         <div className="relative">
           <motion.input
             ref={inputRef}

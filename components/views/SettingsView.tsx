@@ -60,7 +60,7 @@ export default function SettingsView({
         <div className="w-16"></div> {/* Spacer */}
       </header>
 
-      <main className="space-y-10">
+      <main className="space-y-10 flex-grow">
         <section>
           <h2 className="text-sm font-semibold text-muted-foreground mb-3">appearance</h2>
           <div className="space-y-4">
@@ -116,21 +116,20 @@ export default function SettingsView({
               onClick={() => setShowClearNotesDialog(true)}
               className="w-full px-4 py-2.5 text-sm font-medium text-destructive-foreground bg-destructive rounded-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-destructive focus:ring-offset-2 dark:focus:ring-offset-card transition-colors"
             >
-              clear all notes
+              factory reset
             </button>
-            {notesClearedMessageVisible && (
-              <motion.p
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }} // This exit won't work unless AnimatePresence wraps this specific element or its parent section
-                className="text-sm text-green-600 dark:text-green-500 text-center p-2 bg-green-50 dark:bg-green-900/30 rounded-md"
-              >
-                All notes cleared! You may need to refresh other open tabs.
-              </motion.p>
-            )}
+             <p className="text-xs text-muted-foreground mt-2 px-1 text-center">
+                this will permanently delete all notes and reset all settings.
+            </p>
           </div>
         </section>
       </main>
+      
+      <footer className="text-center pb-4">
+        <p className="text-xs text-muted-foreground">
+          version {process.env.NEXT_PUBLIC_APP_VERSION}
+        </p>
+      </footer>
 
       <AnimatePresence>
         {showClearNotesDialog && (
@@ -139,21 +138,21 @@ export default function SettingsView({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-            onClick={() => setShowClearNotesDialog(false)} // Close on overlay click
+            onClick={() => setShowClearNotesDialog(false)}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside dialog
+              onClick={(e) => e.stopPropagation()}
               className="bg-card text-card-foreground p-6 rounded-xl shadow-xl max-w-sm w-full space-y-4"
             >
               <div className="flex items-center">
                 <AlertTriangle className="text-destructive mr-3" size={24} />
-                <h2 className="text-lg font-semibold">clear all notes?</h2>
+                <h2 className="text-lg font-semibold">are you sure?</h2>
               </div>
               <p className="text-sm text-muted-foreground">
-                This will permanently delete all your notes. This action cannot be undone.
+                This will permanently delete all your data. This action cannot be undone.
               </p>
               <div className="flex justify-end space-x-3">
                 <button
@@ -166,23 +165,13 @@ export default function SettingsView({
                   onClick={handleClearAllNotesFromSettings}
                   className="px-4 py-2 text-sm font-medium rounded-md text-destructive-foreground bg-destructive hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-destructive focus:ring-offset-2 dark:focus:ring-offset-card"
                 >
-                  clear notes
+                  yes, reset everything
                 </button>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      <p className="text-xs text-muted-foreground mt-4">
-        clearing notes is permanent and cannot be undone.
-      </p>
-
-      <div className="text-center mt-auto pb-4">
-        <p className="text-xs text-muted-foreground">
-          version {process.env.NEXT_PUBLIC_APP_VERSION}
-        </p>
-      </div>
     </motion.div>
   );
 } 

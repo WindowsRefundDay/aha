@@ -100,12 +100,21 @@ export default function Home() {
       setShowWelcome(true);
     }
 
-    const savedDarkMode = localStorage.getItem("aha_darkMode") === 'true';
-    setIsDarkMode(savedDarkMode);
-    if (savedDarkMode) {
+    const savedDarkMode = localStorage.getItem("aha_darkMode");
+    if (savedDarkMode === null) {
+      // First visit, default to dark mode
+      setIsDarkMode(true);
       document.documentElement.classList.add('dark');
+      localStorage.setItem("aha_darkMode", 'true');
     } else {
-      document.documentElement.classList.remove('dark');
+      // Returning user, respect their choice
+      const isDark = savedDarkMode === 'true';
+      setIsDarkMode(isDark);
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
     }
 
     const savedAccentKey = localStorage.getItem("aha_accentColor_key") || DEFAULT_ACCENT_KEY;
@@ -185,6 +194,19 @@ export default function Home() {
     }
   }, []);
 
+  const handleFactoryReset = useCallback(() => {
+    // Clear all app-related localStorage items
+    localStorage.removeItem("aha_notes");
+    localStorage.removeItem("aha_darkMode");
+    localStorage.removeItem("aha_accentColor_key");
+    localStorage.removeItem("aha_accentColor_hsl");
+    localStorage.removeItem("aha_accentColor_fg_hsl");
+    localStorage.removeItem("aha_has_visited");
+    
+    // Reload the page to apply the factory reset state
+    window.location.reload();
+  }, []);
+
   const handleWelcomeDismiss = () => {
     localStorage.setItem("aha_has_visited", "true");
     setShowWelcome(false);
@@ -227,89 +249,131 @@ export default function Home() {
       updatedAt: new Date(),
     }
 
-    setNotes((prev) => prev.map((note) => (note.id === currentNote.id ? updatedNote : note)))
+    setNotes((prev) =>
+      prev.map((n) => (n.id === updatedNote.id ? updatedNote : n))
+    )
+    setView("history")
+  }, [currentNote, detailInput, setNotes, setView]); // Added dependencies
 
-    setCurrentNote(null)
-    setDetailInput("")
-    setView("capture")
-  }, [currentNote, detailInput, setNotes, setCurrentNote, setDetailInput, setView]); // Added dependencies
-
-  const handleDeleteNote = useCallback((id: string) => {
-    setNotes((prev) => prev.filter((note) => note.id !== id))
-  }, [setNotes]); // Added dependency (setter is stable)
-
-  const handleNoteClick = useCallback((note: Note) => {
+  const handleNoteSelect = useCallback((note: Note) => {
     setCurrentNote(note)
     setDetailInput(note.details || "")
     setView("detail")
-  }, [setCurrentNote, setDetailInput, setView]); // Added dependencies (setters are stable)
+  }, [setCurrentNote, setDetailInput, setView]); // Added dependencies
 
-  const handleClearSelection = () => {
-    // ... existing code ...
+  const handleBackToHistory = useCallback(() => {
+    setCurrentNote(null)
+    setDetailInput("")
+    setView("history")
+  }, [setCurrentNote, setDetailInput, setView]); // Added dependencies
+
+  const handleDeleteNote = useCallback((noteId: string) => {
+    setNotes((prev) => prev.filter((n) => n.id !== noteId))
+    if (currentNote && currentNote.id === noteId) {
+      handleBackToHistory();
+    }
+  }, [currentNote, setNotes, handleBackToHistory]); // Added dependencies
+
+  const handleFocusNote = useCallback((note: Note) => {
+    setCurrentNote(note)
+    setDetailInput(note.details || "")
+    setView("focusNote")
+  }, [setCurrentNote, setDetailInput, setView]); // Added dependencies
+
+  const handleSelectionChange = () => {
+    if (detailRef.current) {
+      setSelectedText({
+        start: detailRef.current.selectionStart,
+        end: detailRef.current.selectionEnd,
+      })
+    }
   }
 
-  // Conditional rendering for settings page logic
-  // The original `if (!isMounted) return null;` from settings page is tricky here.
-  // If we return null for the whole `Home` component, nothing renders.
-  // We'll rely on the `isMounted` for rendering parts of settings UI if needed,
-  // or ensure that operations depending on `localStorage` are safe.
-  // For now, the main settings useEffect runs once and sets things up.
+  const handleClearSelection = () => {
+    setSelectedText({ start: 0, end: 0 })
+    if (detailRef.current) {
+      detailRef.current.setSelectionRange(
+        detailRef.current.value.length,
+        detailRef.current.value.length
+      )
+      detailRef.current.focus()
+    }
+  }
+
+  const getSelectedText = () => {
+    if (!detailRef.current) return ""
+    return detailRef.current.value.substring(
+      selectedText.start,
+      selectedText.end
+    )
+  }
+
+  const getScript = () => {
+    const selection = getSelectedText()
+    if (!selection) return
+    const newNote = {
+      id: Date.now().toString(),
+      gist: selection,
+      details: `source: ${currentNote?.gist}`,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+    setNotes((prev) => [newNote, ...prev])
+    handleClearSelection()
+  }
 
   return (
     <main className="min-h-screen flex flex-col overflow-hidden">
-      <AnimatePresence mode="wait">
-        {showWelcome && <WelcomeView onDismiss={handleWelcomeDismiss} />}
+       <AnimatePresence>
+         {showWelcome && <WelcomeView key="welcome" onDismiss={handleWelcomeDismiss} isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />}
+       </AnimatePresence>
 
+      <AnimatePresence mode="wait">
         {view === "capture" && (
           <CaptureView 
+            inputRef={inputRef}
             gistInput={gistInput}
             setGistInput={setGistInput}
             handleGistSubmit={handleGistSubmit}
-            notes={notes}
-            handleNoteClick={handleNoteClick}
             setView={setView}
-            inputRef={inputRef}
+            notesExist={notes.length > 0}
           />
         )}
-
         {view === "history" && (
-          <HistoryView 
+          <HistoryView
+            notes={notes}
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
-            filteredNotes={filteredNotes}
-            notes={notes}
-            handleNoteClick={handleNoteClick}
-            handleDeleteNote={handleDeleteNote}
+            handleNoteClick={handleNoteSelect}
             setView={setView}
-            getFormattedDate={getFormattedDate} // Pass the function down
+            filteredNotes={filteredNotes}
+            getFormattedDate={getFormattedDate}
+            handleDeleteNote={handleDeleteNote}
           />
         )}
-
         {view === "detail" && currentNote && (
-          <DetailView 
+          <DetailView
             currentNote={currentNote}
-            setView={setView}
-            handleDeleteNote={handleDeleteNote}
             setDetailInput={setDetailInput}
+            handleDeleteNote={handleDeleteNote}
+            setView={setView}
             renderMarkdown={renderMarkdown}
           />
         )}
-
         {view === "focusNote" && currentNote && (
-          <FocusNoteView 
+          <FocusNoteView
             currentNote={currentNote}
             detailInput={detailInput}
             setDetailInput={setDetailInput}
+            detailRef={detailRef}
             handleDetailSubmit={handleDetailSubmit}
             setView={setView}
             setCurrentNote={setCurrentNote}
-            detailRef={detailRef}
           />
         )}
-
         {/* Settings View - Content from app/settings/page.tsx */}
-        {view === "settings" && isMounted && ( // Added isMounted check here for safety
-          <SettingsView 
+        {view === "settings" && (
+          <SettingsView
             setView={setView}
             isDarkMode={isDarkMode}
             toggleDarkMode={toggleDarkMode}
@@ -324,5 +388,5 @@ export default function Home() {
         )}
       </AnimatePresence>
     </main>
-  )
+  );
 }

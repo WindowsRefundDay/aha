@@ -15,15 +15,20 @@ a few steps to get a local copy up and running.
 
 ### installation
 
-1.  clone the repo
+1. clone the repo
+
     ```sh
     git clone https://github.com/WindowsRefundDay/aha.git
     ```
-2.  install packages
+
+2. install packages
+
     ```sh
     npm install
     ```
+
     or
+
     ```sh
     yarn install
     ```
@@ -46,9 +51,9 @@ open [http://localhost:3000](http://localhost:3000) to see it in your browser.
 
 ## features
 
--   **markdown support** — write notes with rich text formatting.
--   **dark mode** — for late-night sessions.
--   **custom accents** — personalize the look and feel.
--   **local storage** — your notes are saved in your browser. no cloud, no tracking.
--   **search** — find what you're looking for, fast.
--   **responsive** — works beautifully on desktop and mobile. 
+- **markdown support** — write notes with rich text formatting.
+- **dark mode** — for late-night sessions.
+- **custom accents** — personalize the look and feel.
+- **local storage** — your notes are saved in your browser. no cloud, no tracking.
+- **search** — find what you're looking for, fast.
+- **responsive** — works beautifully on desktop and mobile.

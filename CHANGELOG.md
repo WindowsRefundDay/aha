@@ -19,4 +19,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Customizable accent colors.
 - All data is stored locally in the browser's localStorage.
 - Responsive design for mobile and desktop.
-- Settings page to manage theme, accent color, and clear notes. 
+- Settings page to manage theme, accent color, and clear notes.
