@@ -125,6 +125,21 @@ export default function Home() {
 
   }, []); // Empty dependency array, runs once on mount for the Home component
 
+  // Handle 'Esc' key to go back from history
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && view === 'history') {
+        setView('capture');
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [view, setView]);
+
   // Filtered notes using useMemo
   const filteredNotes: Note[] = useMemo(() => {
     let tempFilteredNotes = notes;
