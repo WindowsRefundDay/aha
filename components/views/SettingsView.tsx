@@ -27,6 +27,7 @@ interface SettingsViewProps {
   setShowClearNotesDialog: (show: boolean) => void;
   notesClearedMessageVisible: boolean;
   handleClearAllNotesFromSettings: () => void;
+  handleExportAllData: () => void;
   // isMounted: boolean; // We'll assume the parent handles ensuring this view only renders when appropriate
 }
 
@@ -41,6 +42,7 @@ export default function SettingsView({
   setShowClearNotesDialog,
   notesClearedMessageVisible,
   handleClearAllNotesFromSettings,
+  handleExportAllData,
 }: SettingsViewProps) {
   return (
     <motion.div
@@ -112,6 +114,12 @@ export default function SettingsView({
         <section>
           <h2 className="text-sm font-semibold text-muted-foreground mb-3">data management</h2>
           <div className="p-4 bg-card text-card-foreground rounded-lg shadow-sm space-y-3">
+            <button
+              onClick={handleExportAllData}
+              className="w-full px-4 py-2.5 text-sm font-medium text-secondary-foreground bg-secondary rounded-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 dark:focus:ring-offset-card transition-colors"
+            >
+              export all data
+            </button>
             <button
               onClick={() => setShowClearNotesDialog(true)}
               className="w-full px-4 py-2.5 text-sm font-medium text-destructive-foreground bg-destructive rounded-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-destructive focus:ring-offset-2 dark:focus:ring-offset-card transition-colors"

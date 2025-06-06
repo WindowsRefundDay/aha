@@ -207,6 +207,26 @@ export default function Home() {
     window.location.reload();
   }, []);
 
+  const handleExportAllData = useCallback(() => {
+    if (notes.length === 0) {
+      // Maybe show a message to the user that there is nothing to export.
+      // For now, we'll just log it and do nothing.
+      console.log("No notes to export.");
+      return;
+    }
+  
+    const jsonData = JSON.stringify(notes, null, 2); // Pretty print JSON
+    const blob = new Blob([jsonData], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "aha-notes.json";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }, [notes]);
+
   const handleWelcomeDismiss = () => {
     localStorage.setItem("aha_has_visited", "true");
     setShowWelcome(false);
@@ -336,7 +356,8 @@ export default function Home() {
             setGistInput={setGistInput}
             handleGistSubmit={handleGistSubmit}
             setView={setView}
-            notesExist={notes.length > 0}
+            notes={notes}
+            handleNoteClick={handleNoteSelect}
           />
         )}
         {view === "history" && (
@@ -383,7 +404,8 @@ export default function Home() {
             showClearNotesDialog={showClearNotesDialog}
             setShowClearNotesDialog={setShowClearNotesDialog}
             notesClearedMessageVisible={notesClearedMessageVisible}
-            handleClearAllNotesFromSettings={handleClearAllNotesFromSettings}
+            handleClearAllNotesFromSettings={handleFactoryReset}
+            handleExportAllData={handleExportAllData}
           />
         )}
       </AnimatePresence>

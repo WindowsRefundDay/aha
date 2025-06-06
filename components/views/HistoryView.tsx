@@ -72,23 +72,23 @@ export default function HistoryView({
               key={note.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="relative h-full"
+              className="relative"
             >
               <div
                 onClick={() => handleNoteClick(note)}
                 className={cn(
-                  "bg-card text-card-foreground p-4 rounded-xl cursor-pointer hover:bg-muted transition-colors h-full flex flex-col justify-between",
+                  "bg-card text-card-foreground p-4 rounded-xl cursor-pointer hover:bg-muted transition-colors",
                 )}
               >
                 <div>
-                  <div className="break-words font-semibold">{note.gist}</div>
+                  <div className="break-words font-semibold line-clamp-2">{note.gist}</div>
                   {note.details && (
                     <p className="mt-2 text-sm text-muted-foreground line-clamp-3">
                       {note.details}
                     </p>
                   )}
                 </div>
-                <span className="text-xs text-muted-foreground self-end mt-2">
+                <span className="text-xs text-muted-foreground text-right block mt-4">
                   {getFormattedDate(new Date(note.createdAt))}
                 </span>
               </div>
