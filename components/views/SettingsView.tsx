@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { ChevronLeft, AlertTriangle, Sun, Moon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { viewTransitionVariants } from "@/lib/animations"
+import { useRef } from "react"
 
 // Define a more specific type for AccentColor if it's simple enough, otherwise 'any' or a broader type
 interface AccentColor {
@@ -28,6 +29,7 @@ interface SettingsViewProps {
   notesClearedMessageVisible: boolean;
   handleClearAllNotesFromSettings: () => void;
   handleExportAllData: () => void;
+  handleImportAllData: (file: File) => void;
   // isMounted: boolean; // We'll assume the parent handles ensuring this view only renders when appropriate
 }
 
@@ -43,7 +45,10 @@ export default function SettingsView({
   notesClearedMessageVisible,
   handleClearAllNotesFromSettings,
   handleExportAllData,
+  handleImportAllData,
 }: SettingsViewProps) {
+  const importInputRef = useRef<HTMLInputElement>(null);
+
   return (
     <motion.div
       key="settings"
@@ -114,6 +119,24 @@ export default function SettingsView({
         <section>
           <h2 className="text-sm font-semibold text-muted-foreground mb-3">data management</h2>
           <div className="p-4 bg-card text-card-foreground rounded-lg shadow-sm space-y-3">
+            <input
+              type="file"
+              accept=".json"
+              ref={importInputRef}
+              onChange={(e) => {
+                if (e.target.files && e.target.files[0]) {
+                  handleImportAllData(e.target.files[0]);
+                }
+                e.target.value = "";
+              }}
+              hidden
+            />
+            <button
+              onClick={() => importInputRef.current?.click()}
+              className="w-full px-4 py-2.5 text-sm font-medium text-secondary-foreground bg-secondary rounded-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 dark:focus:ring-offset-card transition-colors"
+            >
+              import all data
+            </button>
             <button
               onClick={handleExportAllData}
               className="w-full px-4 py-2.5 text-sm font-medium text-secondary-foreground bg-secondary rounded-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 dark:focus:ring-offset-card transition-colors"

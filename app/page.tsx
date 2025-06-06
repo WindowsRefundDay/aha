@@ -70,6 +70,11 @@ export default function Home() {
   const [detailInput, setDetailInput] = useState("")
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedText, setSelectedText] = useState({ start: 0, end: 0 })
+  const [pendingDeletion, setPendingDeletion] = useState<{
+    noteId: string;
+    originalDisplayIndex: number;
+    filteredListSnapshot: Note[];
+  } | null>(null);
 
   // State from settings/page.tsx
   const [isMounted, setIsMounted] = useState(false); // We'll manage mounting effects carefully
@@ -156,7 +161,8 @@ export default function Home() {
           (note.details && note.details.toLowerCase().includes(lowerSearchQuery))
       );
     }
-    return tempFilteredNotes;
+    // Sort by creation date, newest first, for a consistent order
+    return tempFilteredNotes.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }, [notes, searchQuery]);
 
   // Load notes from localStorage on mount
@@ -246,6 +252,34 @@ export default function Home() {
     URL.revokeObjectURL(url);
   }, [notes]);
 
+  // Add import notes handler
+  const handleImportAllData = useCallback((file: File) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const text = e.target?.result;
+        if (typeof text !== 'string') throw new Error('Unable to read file');
+        const imported = JSON.parse(text, (key, value) => {
+          if ((key === 'createdAt' || key === 'updatedAt') && typeof value === 'string') {
+            return new Date(value);
+          }
+          return value;
+        });
+        if (!Array.isArray(imported)) {
+          console.error('Invalid format: expected an array of notes');
+          return;
+        }
+        setNotes(imported);
+        localStorage.setItem('aha_notes', JSON.stringify(imported));
+        console.log(`Imported ${imported.length} notes.`);
+      } catch (err) {
+        console.error('Error importing notes:', err);
+      }
+    };
+    reader.readAsText(file);
+  }, [setNotes]);
+
   const handleWelcomeDismiss = () => {
     localStorage.setItem("aha_has_visited", "true");
     setShowWelcome(false);
@@ -306,12 +340,48 @@ export default function Home() {
     setView("history")
   }, [setCurrentNote, setDetailInput, setView]); // Added dependencies
 
-  const handleDeleteNote = useCallback((noteId: string) => {
-    setNotes((prev) => prev.filter((n) => n.id !== noteId))
-    if (currentNote && currentNote.id === noteId) {
-      handleBackToHistory();
+  const handleDeleteNote = useCallback((idToDelete: string) => {
+    // Find the note in the *currently displayed filtered list*
+    const currentDisplayIndexInFilteredList = filteredNotes.findIndex(note => note.id === idToDelete);
+  
+    if (currentDisplayIndexInFilteredList === -1) {
+      console.warn("Attempted to delete a note not found in filtered list. Deleting from master list as a fallback.");
+      setNotes(prev => prev.filter(n => n.id !== idToDelete));
+      return;
     }
-  }, [currentNote, setNotes, handleBackToHistory]); // Added dependencies
+  
+    // If deleting the note currently in detail view, navigate back
+    if (currentNote && currentNote.id === idToDelete) {
+        handleBackToHistory();
+    }
+  
+    // 1. Set pending deletion info, capturing the current state of filteredNotes
+    setPendingDeletion({
+      noteId: idToDelete,
+      originalDisplayIndex: currentDisplayIndexInFilteredList,
+      filteredListSnapshot: [...filteredNotes], // Crucial: snapshot of the list
+    });
+  
+    // 2. Define animation timings
+    const deletedCardExitAnimationDuration = 0.25 * 1000; // 250ms (from cardVariants.exit)
+  
+    // 3. Delay the actual removal from the master 'notes' array.
+    setTimeout(() => {
+      setNotes(currentMasterNotes => currentMasterNotes.filter(note => note.id !== idToDelete));
+  
+      // 4. Clear pending info after a longer delay.
+      const dominoStaggerMs = 0.05 * 1000; // 50ms
+      const maxAffectedCardsInSnapshot = filteredNotes.length - 1 - currentDisplayIndexInFilteredList;
+      const estimatedDominoEffectDuration = maxAffectedCardsInSnapshot > 0 ? (maxAffectedCardsInSnapshot * dominoStaggerMs) : 0;
+  
+      const clearPendingTimeout = Math.max(deletedCardExitAnimationDuration, estimatedDominoEffectDuration) + 300;
+  
+      setTimeout(() => {
+        setPendingDeletion(null);
+      }, clearPendingTimeout);
+  
+    }, 50); // A small delay (e.g., 50ms) to allow re-render
+  }, [filteredNotes, currentNote, handleBackToHistory]);
 
   const handleFocusNote = useCallback((note: Note) => {
     setCurrentNote(note)
@@ -381,23 +451,14 @@ export default function Home() {
         )}
         {view === "history" && (
           <HistoryView
-            notes={notes}
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
-            handleNoteClick={handleNoteSelect}
             setView={setView}
             filteredNotes={filteredNotes}
             getFormattedDate={getFormattedDate}
             handleDeleteNote={handleDeleteNote}
-          />
-        )}
-        {view === "detail" && currentNote && (
-          <DetailView
-            currentNote={currentNote}
-            setDetailInput={setDetailInput}
-            handleDeleteNote={handleDeleteNote}
-            setView={setView}
-            renderMarkdown={renderMarkdown}
+            pendingDeletion={pendingDeletion}
+            handleFocusNote={handleFocusNote}
           />
         )}
         {view === "focusNote" && currentNote && (
@@ -425,6 +486,7 @@ export default function Home() {
             notesClearedMessageVisible={notesClearedMessageVisible}
             handleClearAllNotesFromSettings={handleFactoryReset}
             handleExportAllData={handleExportAllData}
+            handleImportAllData={handleImportAllData}
           />
         )}
       </AnimatePresence>
