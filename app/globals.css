@@ -115,3 +115,11 @@
 .animate-fade-in {
   animation: fadeIn 0.3s ease-in-out;
 }
+
+/* Keyboard visibility utility */
+@media (max-width: 768px) {
+  .keyboard-visible {
+    /* Adjust this value based on the typical height of mobile keyboards */
+    transform: translateY(-80px);
+  }
+}
