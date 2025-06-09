@@ -146,7 +146,7 @@ export default function HistoryView({
       </div>
 
       <LayoutGroup>
-        {filteredNotes.length > 0 ? (
+      {filteredNotes.length > 0 ? (
           <motion.div
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 flex-grow overflow-y-auto pb-6 items-start"
             variants={containerVariants}
@@ -209,36 +209,36 @@ export default function HistoryView({
               })}
             </AnimatePresence>
           </motion.div>
-        ) : (
-          <div className="flex flex-grow items-center justify-center">
-            <span className="text-muted-foreground text-center">
-              {searchQuery // Check if there's a search query first
-                ? "no matching notes for the current search"
-                // : allNotes && allNotes.length === 0 // Check if underlying master list is empty
-                // For simplicity, if no filtered notes and no search, assume no notes.
-                // This part depends on whether you pass the original full list for this message.
-                : "no notes yet"
-              }
-            </span>
-          </div>
-        )}
+      ) : (
+        <div className="flex flex-grow items-center justify-center">
+          <span className="text-muted-foreground text-center">
+            {searchQuery // Check if there's a search query first
+              ? "no matching notes for the current search"
+              // : allNotes && allNotes.length === 0 // Check if underlying master list is empty
+              // For simplicity, if no filtered notes and no search, assume no notes.
+              // This part depends on whether you pass the original full list for this message.
+              : "no notes yet"
+            }
+          </span>
+        </div>
+      )}
 
         {/* Modal Overlay */}
-        <AnimatePresence>
-          {selectedNote && (
-            <motion.div
+      <AnimatePresence>
+        {selectedNote && (
+          <motion.div
               key="modal-backdrop"
-              initial={{ opacity: 0 }}
+            initial={{ opacity: 0 }}
               animate={{ opacity: 1, transition: { duration: 0.3, ease: "easeInOut" } }}
               exit={{ opacity: 0, transition: { duration: 0.2, ease: "easeInOut" } }}
-              onClick={() => setSelectedNote(null)}
+            onClick={() => setSelectedNote(null)}
               className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-            >
-              <motion.div
+          >
+            <motion.div
                 key={`modal-content-${selectedNote.id}`}
                 layoutId={`card-${selectedNote.id}`}
                 transition={sharedLayoutMorphTransition}
-                onClick={(e) => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
                 className="relative bg-card text-card-foreground p-6 rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden"
               >
                 <motion.div
@@ -246,41 +246,41 @@ export default function HistoryView({
                   animate={{ opacity: 1, y: 0, transition: { delay: 0.1, duration: 0.25, ease: "easeOut" } }}
                   exit={{ opacity: 0, y: 5, transition: { duration: 0.15, ease: "easeIn" } }}
                   className="space-y-4"
-                >
-                  <h2 className="text-2xl font-semibold pr-16">{selectedNote.gist}</h2>
-                  <p className="text-muted-foreground whitespace-pre-wrap">{selectedNote.details}</p>
-
-                  <div className="flex justify-between items-center pt-4">
-                    <span className="text-xs text-muted-foreground">
-                      {getFormattedDate(new Date(selectedNote.createdAt))}
-                    </span>
-                    <div className="flex space-x-2">
-                      <button
+            >
+              <h2 className="text-2xl font-semibold pr-16">{selectedNote.gist}</h2>
+              <p className="text-muted-foreground whitespace-pre-wrap">{selectedNote.details}</p>
+              
+              <div className="flex justify-between items-center pt-4">
+                <span className="text-xs text-muted-foreground">
+                    {getFormattedDate(new Date(selectedNote.createdAt))}
+                </span>
+                <div className="flex space-x-2">
+                    <button
                         onClick={handleEditFromModal}
                         className="px-4 py-2 text-sm font-medium rounded-lg bg-secondary text-secondary-foreground hover:opacity-90 transition-opacity flex items-center space-x-2"
-                      >
+                    >
                         <Edit size={16} /> <span>Edit</span>
-                      </button>
-                      <button
+                    </button>
+                    <button
                         onClick={handleDeleteFromModal}
                         className="px-4 py-2 text-sm font-medium rounded-lg bg-destructive text-destructive-foreground hover:opacity-90 transition-opacity flex items-center space-x-2"
-                      >
+                    >
                         <Trash2 size={16} /> <span>Delete</span>
-                      </button>
-                    </div>
-                  </div>
+                    </button>
+                </div>
+              </div>
                 </motion.div>
 
-                <button
-                  onClick={() => setSelectedNote(null)}
+              <button
+                onClick={() => setSelectedNote(null)}
                   className="absolute right-4 top-4 w-10 h-10 flex items-center justify-center text-muted-foreground hover:text-foreground rounded-full hover:bg-white/10 transition-colors"
-                >
-                  <X size={20} />
-                </button>
-              </motion.div>
+              >
+                <X size={20} />
+              </button>
             </motion.div>
-          )}
-        </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
       </LayoutGroup>
 
     </motion.div>

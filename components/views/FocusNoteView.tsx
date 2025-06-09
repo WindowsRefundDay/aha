@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { viewTransitionVariants } from "@/lib/animations" // Import variants
 import type { Note } from "../../types"
@@ -12,7 +13,7 @@ interface FocusNoteViewProps {
   handleDetailSubmit: () => void;
   setView: (view: "capture" | "history" | "detail" | "focusNote" | "settings") => void;
   setCurrentNote: (note: Note | null) => void;
-  detailRef: React.RefObject<HTMLTextAreaElement | null>; 
+  detailRef: React.RefObject<HTMLTextAreaElement>; 
 }
 
 export default function FocusNoteView({
@@ -24,6 +25,28 @@ export default function FocusNoteView({
   setCurrentNote,
   detailRef,
 }: FocusNoteViewProps) {
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const handleViewportResize = () => {
+      if (window.visualViewport) {
+        const { height } = window.visualViewport;
+        // A common threshold is to check if the viewport height is less than 80% of the window height
+        const isLikelyKeyboard = height < window.innerHeight * 0.8;
+        setIsKeyboardVisible(isLikelyKeyboard);
+      }
+    };
+
+    const vv = window.visualViewport;
+    vv?.addEventListener('resize', handleViewportResize);
+
+    // Initial check in case keyboard is already open
+    handleViewportResize();
+
+    return () => {
+      vv?.removeEventListener('resize', handleViewportResize);
+    };
+  }, []);
 
   const handleTextareaKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     // Save shortcut (Ctrl+Enter or Cmd+Enter)
@@ -117,7 +140,9 @@ export default function FocusNoteView({
         onKeyDown={handleTextareaKeyDown}
       />
 
-      <div className="flex justify-end space-x-3 mt-auto w-full">
+      <div 
+        className={`flex justify-end space-x-3 mt-auto w-full transition-transform duration-300 ease-in-out ${isKeyboardVisible ? 'keyboard-visible' : ''}`}
+      >
         <button
           onClick={() => {
             // Reset potential changes if cancelled
