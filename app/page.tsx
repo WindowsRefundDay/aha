@@ -16,6 +16,7 @@ import DetailView from "@/components/views/DetailView" // Added import
 import FocusNoteView from "@/components/views/FocusNoteView" // Added import
 import SettingsView from "@/components/views/SettingsView" // Added import
 import WelcomeView from "@/components/views/WelcomeView"
+import { useVisualViewport } from "@/lib/hooks/useVisualViewport"
 
 // Constants from settings/page.tsx
 const ACCENT_COLORS = [
@@ -86,6 +87,9 @@ export default function Home() {
 
   const inputRef = useRef<HTMLInputElement>(null)
   const detailRef = useRef<HTMLTextAreaElement>(null)
+  
+  // Use the visual viewport hook
+  const viewportHeight = useVisualViewport();
 
   // Focus input on mount
   useEffect(() => {
@@ -437,59 +441,61 @@ export default function Home() {
          {showWelcome && <WelcomeView key="welcome" onDismiss={handleWelcomeDismiss} isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />}
        </AnimatePresence>
 
-      <AnimatePresence mode="wait">
-        {view === "capture" && (
-          <CaptureView 
-            inputRef={inputRef}
-            gistInput={gistInput}
-            setGistInput={setGistInput}
-            handleGistSubmit={handleGistSubmit}
-            setView={setView}
-            notes={notes}
-            handleNoteClick={handleNoteSelect}
-          />
-        )}
-        {view === "history" && (
-          <HistoryView
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            setView={setView}
-            filteredNotes={filteredNotes}
-            getFormattedDate={getFormattedDate}
-            handleDeleteNote={handleDeleteNote}
-            pendingDeletion={pendingDeletion}
-            handleFocusNote={handleFocusNote}
-          />
-        )}
-        {view === "focusNote" && currentNote && (
-          <FocusNoteView
-            currentNote={currentNote}
-            detailInput={detailInput}
-            setDetailInput={setDetailInput}
-            detailRef={detailRef}
-            handleDetailSubmit={handleDetailSubmit}
-            setView={setView}
-            setCurrentNote={setCurrentNote}
-          />
-        )}
-        {/* Settings View - Content from app/settings/page.tsx */}
-        {view === "settings" && (
-          <SettingsView
-            setView={setView}
-            isDarkMode={isDarkMode}
-            toggleDarkMode={toggleDarkMode}
-            ACCENT_COLORS={ACCENT_COLORS}
-            selectedAccentKey={selectedAccentKey}
-            handleAccentColorChange={handleAccentColorChange}
-            showClearNotesDialog={showClearNotesDialog}
-            setShowClearNotesDialog={setShowClearNotesDialog}
-            notesClearedMessageVisible={notesClearedMessageVisible}
-            handleClearAllNotesFromSettings={handleFactoryReset}
-            handleExportAllData={handleExportAllData}
-            handleImportAllData={handleImportAllData}
-          />
-        )}
-      </AnimatePresence>
+      <div style={{ height: `${viewportHeight}px` }} className="flex flex-col overflow-hidden">
+        <AnimatePresence mode="wait">
+          {view === "capture" && (
+            <CaptureView 
+              inputRef={inputRef}
+              gistInput={gistInput}
+              setGistInput={setGistInput}
+              handleGistSubmit={handleGistSubmit}
+              setView={setView}
+              notes={notes}
+              handleNoteClick={handleNoteSelect}
+            />
+          )}
+          {view === "history" && (
+            <HistoryView
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              setView={setView}
+              filteredNotes={filteredNotes}
+              getFormattedDate={getFormattedDate}
+              handleDeleteNote={handleDeleteNote}
+              pendingDeletion={pendingDeletion}
+              handleFocusNote={handleFocusNote}
+            />
+          )}
+          {view === "focusNote" && currentNote && (
+            <FocusNoteView
+              currentNote={currentNote}
+              detailInput={detailInput}
+              setDetailInput={setDetailInput}
+              detailRef={detailRef}
+              handleDetailSubmit={handleDetailSubmit}
+              setView={setView}
+              setCurrentNote={setCurrentNote}
+            />
+          )}
+          {/* Settings View - Content from app/settings/page.tsx */}
+          {view === "settings" && (
+            <SettingsView
+              setView={setView}
+              isDarkMode={isDarkMode}
+              toggleDarkMode={toggleDarkMode}
+              ACCENT_COLORS={ACCENT_COLORS}
+              selectedAccentKey={selectedAccentKey}
+              handleAccentColorChange={handleAccentColorChange}
+              showClearNotesDialog={showClearNotesDialog}
+              setShowClearNotesDialog={setShowClearNotesDialog}
+              notesClearedMessageVisible={notesClearedMessageVisible}
+              handleClearAllNotesFromSettings={handleFactoryReset}
+              handleExportAllData={handleExportAllData}
+              handleImportAllData={handleImportAllData}
+            />
+          )}
+        </AnimatePresence>
+      </div>
     </main>
   );
 }
