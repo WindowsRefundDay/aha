@@ -95,7 +95,7 @@ export default function FocusNoteView({
       initial="initial"
       animate="animate"
       exit="exit"
-      className="flex flex-col p-6 flex-grow items-center w-full max-w-2xl lg:max-w-4xl mx-auto" // Centered layout
+      className="relative flex flex-col p-6 flex-grow items-center w-full max-w-2xl lg:max-w-4xl mx-auto" // Centered layout with relative positioning for footer
     >
       <motion.h2 
         className="text-2xl font-semibold mb-6 text-center w-full break-words" // Allow gist to wrap
@@ -110,14 +110,14 @@ export default function FocusNoteView({
         value={detailInput}
         onChange={(e) => setDetailInput(e.target.value)}
         placeholder="elaborate a bit..."
-        className="w-full p-4 bg-card text-card-foreground rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-ring min-h-[250px] text-base mb-4"
+        className="w-full p-4 pb-20 bg-card text-card-foreground rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-ring min-h-[250px] text-base mb-4"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0, transition: { delay: 0.2 } }}
         autoFocus // Focus on the detail input when the view loads
         onKeyDown={handleTextareaKeyDown}
       />
 
-      <div className="flex justify-end space-x-3 mt-auto w-full">
+      <div className="absolute bottom-6 left-6 right-6 flex justify-end space-x-3">
         <button
           onClick={() => {
             // Reset potential changes if cancelled
